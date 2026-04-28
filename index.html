@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Samantha – Mis XV Años</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Great+Vibes&family=Montserrat:wght@200;300;400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --gold: #c9a84c;
+    --gold-light: #e8d5a3;
+    --gold-dark: #8a6d1f;
+    --dark: #1a1510;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html { scroll-behavior:smooth; }
+  body { background:var(--dark); font-family:'Cormorant Garamond',serif; overflow-x:hidden; }
+
+  #particles { position:fixed; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index:0; }
+
+  .page { position:relative; z-index:1; max-width:480px; margin:0 auto; }
+
+  .slide {
+    position:relative; width:100%; overflow:hidden;
+    opacity:0; transform:translateY(38px);
+    transition:opacity 0.85s ease, transform 0.85s ease;
+  }
+  .slide.visible { opacity:1; transform:translateY(0); }
+  .slide img.bg { width:100%; display:block; }
+
+  .gold-sep { width:100%; height:2px; background:linear-gradient(90deg,transparent,var(--gold),transparent); }
+
+  /* ══ SLIDE 01 – MÚSICA ══
+     Image 01 is 2362×1973.
+     White blank box spans rows ~67%→78% of image height, centered with padding ~6% each side. */
+  .music-overlay {
+    position:absolute;
+    top:62.5%; left:6%; width:88%; height:10.5%;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .music-btn {
+    width:100%; height:100%;
+    display:flex; align-items:center; justify-content:center; gap:10px;
+    background:transparent;
+    border:none;
+    border-radius:10px; cursor:pointer;
+    transition:all 0.3s ease; padding:0 14px;
+  }
+  .music-btn:hover { background:rgba(201,168,76,0.08); }
+  .play-circle {
+    width:clamp(30px,8vw,44px); height:clamp(30px,8vw,44px); flex-shrink:0;
+    background:var(--gold); border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    transition:transform 0.3s;
+    box-shadow: 0 2px 10px rgba(201,168,76,0.45);
+  }
+  .play-circle svg { width:clamp(10px,3vw,14px); height:clamp(10px,3vw,14px); fill:#fff; margin-left:2px; }
+  .music-btn.playing .play-circle { transform:scale(1.1); }
+  .music-text {
+    font-family:'Cormorant Garamond',serif; font-style:italic;
+    font-size:clamp(0.9rem,3.8vw,1.35rem);
+    color:#5a3e10; white-space:nowrap; font-weight:400;
+    letter-spacing:0.02em;
+  }
+  .music-bars {
+    display:flex; align-items:flex-end; gap:3px; height:18px;
+    opacity:0; transition:opacity 0.4s; flex-shrink:0;
+  }
+  .music-bars.active { opacity:1; }
+  .music-bars span {
+    width:3px; background:var(--gold); border-radius:2px;
+    animation:bar 0.7s ease-in-out infinite alternate;
+  }
+  .music-bars span:nth-child(1){height:7px;  animation-delay:0s;}
+  .music-bars span:nth-child(2){height:15px; animation-delay:0.12s;}
+  .music-bars span:nth-child(3){height:10px; animation-delay:0.27s;}
+  .music-bars span:nth-child(4){height:17px; animation-delay:0.08s;}
+  .music-bars span:nth-child(5){height:8px;  animation-delay:0.20s;}
+  @keyframes bar { from{transform:scaleY(0.3)} to{transform:scaleY(1)} }
+
+  /* ══ SLIDE 03 – CUENTA REGRESIVA ══
+     Image 03 is 2362×3449.
+     Grey rounded box: rows 84%→97%, horizontal 5.5%→94.4% */
+  .countdown-overlay {
+    position:absolute;
+    top:84%; left:4%; width:94%; height:12%;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .cd-unit {
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    flex:1;
+  }
+  .cd-number {
+    font-family:'Cormorant Garamond',serif; font-weight:500;
+    font-size:clamp(1.5rem,6.5vw,2.5rem); line-height:1;
+    color:#2e1f04;
+    text-shadow:0 1px 2px rgba(201,168,76,0.25);
+  }
+  .cd-label {
+    font-family:'Montserrat',sans-serif;
+    font-size:clamp(0.38rem,1.6vw,0.58rem); font-weight:400;
+    letter-spacing:0.16em; text-transform:uppercase;
+    color:#7a5e1a; margin-top:3px;
+  }
+  .cd-sep {
+    font-family:'Cormorant Garamond',serif;
+    font-size:clamp(1.3rem,4.5vw,1.9rem);
+    color:var(--gold); align-self:flex-start; padding-top:20px;
+    line-height:1; flex-shrink:0;
+  }
+
+  /* ══ SLIDE 05 – MAPA ══
+     Entire image is clickable — no overlay button needed */
+  .map-slide-link {
+    display:block; position:relative; width:100%;
+    cursor:pointer; text-decoration:none;
+  }
+  .map-slide-link::after {
+    content:''; position:absolute; inset:0;
+    background:rgba(201,168,76,0); transition:background 0.3s;
+    pointer-events:none;
+  }
+  .map-slide-link:hover::after { background:rgba(201,168,76,0.07); }
+
+  /* ══ SLIDE 06 – CONFIRMAR ASISTENCIA ══
+     Image 06 is 2362×3449.
+     Button border in image: rows ~51%→60%, width ~12%→88% */
+  .wa-overlay {
+    position:absolute;
+    top:52.5%; left:12%; width:76%; height:8.5%;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .wa-btn {
+    display:flex; align-items:center; justify-content:center; gap:10px;
+    background:transparent;
+    border:none;
+    border-radius:50px;
+    text-decoration:none; color:#3d2a00;
+    font-family:'Cormorant Garamond',serif; font-style:italic;
+    font-size:clamp(0.9rem,3.8vw,1.4rem);
+    letter-spacing:0.02em; font-weight:500;
+    transition:all 0.3s; width:100%; height:100%;
+  }
+  .wa-btn:hover { background:rgba(201,168,76,0.12); transform:scale(1.02); }
+  .wa-btn svg { width:clamp(18px,5vw,24px); height:clamp(18px,5vw,24px); fill:#3d2a00; flex-shrink:0; }
+
+  /* ── Scroll hint ── */
+  .scroll-hint {
+    position:fixed; bottom:20px; left:50%; transform:translateX(-50%);
+    display:flex; flex-direction:column; align-items:center; gap:5px;
+    z-index:99; opacity:1; transition:opacity 0.5s;
+  }
+  .scroll-hint.hidden { opacity:0; pointer-events:none; }
+  .scroll-hint span {
+    font-family:'Montserrat',sans-serif; font-size:0.56rem;
+    letter-spacing:0.22em; text-transform:uppercase; color:var(--gold-light);
+  }
+  .chevron {
+    width:17px; height:17px;
+    border-right:2px solid var(--gold); border-bottom:2px solid var(--gold);
+    transform:rotate(45deg); animation:bounce 1.4s ease-in-out infinite;
+  }
+  @keyframes bounce {
+    0%,100%{transform:rotate(45deg) translateY(0)}
+    50%{transform:rotate(45deg) translateY(5px)}
+  }
+  audio { display:none; }
+</style>
+</head>
+<body>
+
+<canvas id="particles"></canvas>
+
+<div class="scroll-hint" id="scrollHint">
+  <span>Desliza</span>
+  <div class="chevron"></div>
+</div>
+
+<div class="page">
+
+  <!-- 00 Portada -->
+  <div class="slide">
+    <img class="bg" src="img/00.jpg.jpeg" alt="Portada">
+  </div>
+  <div class="gold-sep"></div>
+
+  <!-- 01 Música -->
+  <div class="slide">
+    <img class="bg" src="img/01.jpg.jpeg" alt="Dale play">
+    <div class="music-overlay">
+      <button class="music-btn" id="musicBtn" onclick="toggleMusic()">
+        <div class="play-circle" id="playCircle">
+          <svg id="playIcon" viewBox="0 0 24 24"><polygon points="6,3 20,12 6,21"/></svg>
+        </div>
+        <span class="music-text" id="musicLabel">Dale play a mi canción</span>
+        <div class="music-bars" id="musicBars">
+          <span></span><span></span><span></span><span></span><span></span>
+        </div>
+      </button>
+    </div>
+  </div>
+  <div class="gold-sep"></div>
+
+  <!-- 02 Mensaje -->
+  <div class="slide">
+    <img class="bg" src="img/02.jpg.jpeg" alt="Mensaje">
+  </div>
+  <div class="gold-sep"></div>
+
+  <!-- 03 Cuenta regresiva -->
+  <div class="slide">
+    <img class="bg" src="img/03.jpg.jpeg" alt="Solo Faltan">
+    <div class="countdown-overlay">
+      <div class="cd-unit">
+        <span class="cd-number" id="cdDays">00</span>
+        <span class="cd-label">Días</span>
+      </div>
+      <div class="cd-sep">:</div>
+      <div class="cd-unit">
+        <span class="cd-number" id="cdHours">00</span>
+        <span class="cd-label">Horas</span>
+      </div>
+      <div class="cd-sep">:</div>
+      <div class="cd-unit">
+        <span class="cd-number" id="cdMins">00</span>
+        <span class="cd-label">Min</span>
+      </div>
+      <div class="cd-sep">:</div>
+      <div class="cd-unit">
+        <span class="cd-number" id="cdSecs">00</span>
+        <span class="cd-label">Seg</span>
+      </div>
+    </div>
+  </div>
+  <div class="gold-sep"></div>
+
+  <!-- 04 Cuándo y dónde -->
+  <div class="slide">
+    <img class="bg" src="img/04.jpg.jpeg" alt="Cuando y donde">
+  </div>
+  <div class="gold-sep"></div>
+
+  <!-- 05 Mapa -->
+  <div class="slide">
+    <a class="map-slide-link"
+       href="https://www.google.com/maps/search/?api=1&query=Casa+Campestre+Zafiro+Medellin"
+       target="_blank" rel="noopener">
+      <img class="bg" src="img/05.jpg.jpeg" alt="Ubicacion">
+    </a>
+  </div>
+  <div class="gold-sep"></div>
+
+  <!-- 06 Confirmar asistencia -->
+  <div class="slide">
+    <img class="bg" src="img/06.jpg.jpeg" alt="Confirmar asistencia">
+    <div class="wa-overlay">
+      <a class="wa-btn"
+         href="https://wa.me/573146791843?text=Hola%20Samantha%20%F0%9F%AA%84%0AQuiero%20confirmar%20mi%20asistencia%2C%20estar%C3%A9%20en%20tus%2015.%20Gracias%20por%20invitarme%2C%20me%20hace%20mucha%20ilusi%C3%B3n%20acompa%C3%B1arte%20en%20un%20d%C3%ADa%20tan%20especial%20para%20ti.%0A%C2%A1Nos%20vemos!"
+         target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24">
+          <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/>
+          <path d="M12 0C5.373 0 0 5.373 0 12c0 2.132.558 4.13 1.535 5.864L.057 23.557a.75.75 0 0 0 .916.919l5.834-1.527A11.945 11.945 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.891 0-3.667-.497-5.207-1.371l-.374-.214-3.872 1.013 1.034-3.771-.233-.385A9.959 9.959 0 0 1 2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/>
+        </svg>
+          Cuenta con mi presencia
+      </a>
+    </div>
+  </div>
+  <div class="gold-sep"></div>
+
+  <!-- 07 Cierre -->
+  <div class="slide">
+    <img class="bg" src="img/07.jpg.jpeg" alt="Gracias">
+  </div>
+
+</div>
+
+<audio id="bgAudio" loop>
+  <source src="musica/musica.mp3" type="audio/mpeg">
+</audio>
+
+<script>
+/* Particles */
+(function(){
+  const c=document.getElementById('particles'), ctx=c.getContext('2d');
+  let W,H,p=[];
+  function r(){ W=c.width=window.innerWidth; H=c.height=window.innerHeight; }
+  r(); window.addEventListener('resize',r);
+  for(let i=0;i<55;i++) p.push({x:Math.random()*W,y:Math.random()*H,
+    r:Math.random()*1.3+0.3,dx:(Math.random()-.5)*.22,dy:-Math.random()*.32-.07,a:Math.random()});
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    p.forEach(pt=>{
+      ctx.beginPath(); ctx.arc(((pt.x%W)+W)%W,((pt.y%H)+H)%H,pt.r,0,Math.PI*2);
+      ctx.fillStyle=`rgba(201,168,76,${pt.a*.5})`; ctx.fill();
+      pt.x+=pt.dx; pt.y+=pt.dy;
+      pt.a+=(Math.random()-.5)*.016; pt.a=Math.max(.08,Math.min(1,pt.a));
+      if(pt.y<-5){pt.y=H+5;pt.x=Math.random()*W;}
+    });
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
+
+/* Fade slides */
+const slides=document.querySelectorAll('.slide');
+const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible');}),{threshold:.09});
+slides.forEach(s=>io.observe(s));
+
+/* Scroll hint */
+window.addEventListener('scroll',()=>document.getElementById('scrollHint').classList.add('hidden'),{once:true});
+
+/* Countdown */
+const EV=new Date('2026-06-05T19:00:00');
+function tick(){
+  let d=EV-new Date(); if(d<0)d=0;
+  const days=Math.floor(d/86400000), hrs=Math.floor((d%86400000)/3600000),
+        min=Math.floor((d%3600000)/60000), sec=Math.floor((d%60000)/1000);
+  document.getElementById('cdDays').textContent=String(days).padStart(2,'0');
+  document.getElementById('cdHours').textContent=String(hrs).padStart(2,'0');
+  document.getElementById('cdMins').textContent=String(min).padStart(2,'0');
+  document.getElementById('cdSecs').textContent=String(sec).padStart(2,'0');
+}
+tick(); setInterval(tick,1000);
+
+/* Music */
+let playing=false;
+const audio=document.getElementById('bgAudio');
+const btn=document.getElementById('musicBtn');
+const bars=document.getElementById('musicBars');
+const label=document.getElementById('musicLabel');
+const icon=document.getElementById('playIcon');
+function toggleMusic(){
+  if(playing){
+    audio.pause();
+    icon.innerHTML='<polygon points="6,3 20,12 6,21"/>';
+    bars.classList.remove('active');
+    label.textContent='Dale play a mi canción';
+    btn.classList.remove('playing');
+  }else{
+    audio.play().catch(()=>{});
+    icon.innerHTML='<rect x="5" y="3" width="4" height="18"/><rect x="15" y="3" width="4" height="18"/>';
+    bars.classList.add('active');
+    label.textContent='Reproduciendo…';
+    btn.classList.add('playing');
+  }
+  playing=!playing;
+}
+</script>
+</body>
+</html>
